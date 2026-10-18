@@ -1,3 +1,6 @@
 @import 'bootstrap';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+@import '@fontsource/space-mono/400.css';
+@import '@fontsource/space-mono/700.css';
 @import './style.css';
-@import './admin.css'
+@import './admin.css';

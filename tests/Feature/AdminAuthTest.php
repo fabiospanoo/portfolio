@@ -4,6 +4,8 @@ use App\Models\AdminCredential;
 use App\Services\TotpService;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use PragmaRX\Google2FA\Google2FA;
 
 beforeEach(function () {
@@ -70,4 +72,43 @@ it('rejects an invalid TOTP code', function () {
     $this->post('/login', ['password' => 'secret123']);
     $this->post('/login/2fa', ['code' => '000000'])
         ->assertSessionHasErrors('code');
+});
+
+it('logs in using a hashed admin password', function () {
+    Config::set('admin.password', null);
+    Config::set('admin.password_hash', Hash::make('hashed-secret-456'));
+
+    $this->post('/login', ['password' => 'hashed-secret-456'])
+        ->assertRedirect(route('admin.setup'));
+});
+
+it('clears session on logout', function () {
+    $this->withSession([
+        'admin_authenticated' => true,
+        'admin_2fa_verified' => true,
+    ]);
+
+    $this->post(route('admin.logout'))
+        ->assertRedirect(route('projects'))
+        ->assertSessionMissing('admin_authenticated')
+        ->assertSessionMissing('admin_2fa_verified');
+});
+
+it('supports legacy plaintext TOTP secrets from production database without error', function () {
+    $secret = app(TotpService::class)->generateSecret();
+
+    DB::table('admin_credentials')->insert([
+        'totp_secret' => $secret,
+        'totp_confirmed_at' => now(),
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    Config::set('admin.password', 'secret123');
+
+    $code = (new Google2FA)->getCurrentOtp($secret);
+
+    $this->post('/login', ['password' => 'secret123']);
+    $this->post('/login/2fa', ['code' => $code])
+        ->assertRedirect(route('admin.projects.index'));
 });

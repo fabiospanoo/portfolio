@@ -36,6 +36,14 @@
                                 <tr>
                                     <td style="padding:0 0 8px; font-size:15px; line-height:1.7; color:#CCCCCC; white-space:pre-wrap; border:1px solid #343434; background-color:#191919; padding:16px;">{{ $contactData['message'] }}</td>
                                 </tr>
+                                @if (!empty($attachmentData))
+                                <tr>
+                                    <td style="padding:16px 0 4px; font-size:12px; letter-spacing:1px; text-transform:uppercase; color:#569CD6;">attachment</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:0 0 8px; font-size:14px; color:#DCDCAA;">&gt; {{ $attachmentData['name'] }}</td>
+                                </tr>
+                                @endif
                             </table>
                         </td>
                     </tr>

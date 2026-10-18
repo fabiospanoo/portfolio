@@ -3,7 +3,7 @@
         <main class="blog-section">
             <ul class="blog-list">
                 @forelse ($posts as $post)
-                    <li class="blog-item" id="post-{{ $post->id }}" data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
+                    <li class="blog-item" id="post-{{ $post->id }}" data-aos="fade-up" data-aos-delay="{{ min($loop->index * 60, 240) }}">
                         <div class="blog-item-content">
                             <p class="blog-date"><span class="text-comment">./</span> {{ $post->created_at->format('d F Y') }}</p>
                             <h2 class="blog-title">
@@ -11,8 +11,8 @@
                             </h2>
                             <p class="blog-excerpt">{{ \Illuminate\Support\Str::limit($post->content, 65, '...') }}</p>
                         </div>
-                        <a class="blog-read-more" href="{{ route('blog.show', $post) }}" aria-label="Read {{ $post->title }}">
-                            Read post <span aria-hidden="true">&rarr;</span>
+                        <a class="blog-read-more d-inline-flex align-items-center gap-2" href="{{ route('blog.show', $post) }}" aria-label="Read {{ $post->title }}">
+                            <span>Read post</span> <i class="bi bi-arrow-right icon-arrow-right" aria-hidden="true"></i>
                         </a>
                     </li>
                 @empty

@@ -4,9 +4,9 @@
     metaType="article">
     <div class="body-style">
         <main class="blog-article">
-            <a class="blog-back-link" href="{{ route('blog.index') }}">&larr; Back to blog</a>
+            <a class="blog-back-link d-inline-flex align-items-center gap-2" href="{{ route('blog.index') }}" data-aos="fade-up"><i class="bi bi-arrow-left icon-arrow-left"></i> <span>Back to blog</span></a>
 
-            <article>
+            <article data-aos="fade-up" data-aos-delay="100">
                 <header class="blog-article-header">
                     <p class="blog-date"><span class="text-comment">./</span> {{ $post->created_at->format('d F Y') }}</p>
                     @if ($post->category)

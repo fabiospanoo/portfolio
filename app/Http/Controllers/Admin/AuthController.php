@@ -8,6 +8,7 @@ use App\Models\AdminCredential;
 use App\Services\TotpService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 class AuthController extends Controller
@@ -25,9 +26,22 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        $expected = (string) config('admin.password');
+        $inputPassword = (string) $request->input('password');
+        $passwordHash = config('admin.password_hash');
+        $plainPassword = (string) config('admin.password');
 
-        if ($expected === '' || ! hash_equals($expected, (string) $request->input('password'))) {
+        $isValid = false;
+        if (! empty($passwordHash)) {
+            $isValid = Hash::check($inputPassword, (string) $passwordHash);
+        } elseif ($plainPassword !== '') {
+            if (str_starts_with($plainPassword, '$2y$') || str_starts_with($plainPassword, '$argon2')) {
+                $isValid = Hash::check($inputPassword, $plainPassword);
+            } else {
+                $isValid = hash_equals($plainPassword, $inputPassword);
+            }
+        }
+
+        if (! $isValid) {
             AdminAuditLog::record(AdminAuditLog::EVENT_PASSWORD_FAILED, $request->ip(), $request->userAgent());
 
             return back()->withErrors(['password' => 'Invalid credentials.']);
@@ -101,6 +115,7 @@ class AuthController extends Controller
         ])->save();
 
         $request->session()->forget('admin_pending_secret');
+        $request->session()->regenerate();
         $request->session()->put('admin_2fa_verified', true);
 
         AdminAuditLog::record(AdminAuditLog::EVENT_TOTP_OK, $request->ip(), $request->userAgent());
@@ -146,6 +161,7 @@ class AuthController extends Controller
             return back()->withErrors(['code' => 'Invalid code, try again.']);
         }
 
+        $request->session()->regenerate();
         $request->session()->put('admin_2fa_verified', true);
         $credential->forceFill(['last_login_at' => now()])->save();
 
@@ -159,7 +175,8 @@ class AuthController extends Controller
     {
         AdminAuditLog::record(AdminAuditLog::EVENT_LOGOUT, $request->ip(), $request->userAgent());
 
-        $request->session()->flush();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return redirect()->route('projects');
     }

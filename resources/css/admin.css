@@ -1,4 +1,6 @@
 @import 'bootstrap';
+@import '@fontsource/space-mono/400.css';
+@import '@fontsource/space-mono/700.css';
 
 /* --- base tokens (copied from style.css) --- */
 :root{

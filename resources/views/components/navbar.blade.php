@@ -12,7 +12,7 @@
                 <a class="nav-link {{ in_array(Route::currentRouteName(), ['blog.index', 'blog.show']) ? 'active' : '' }}" href="{{ route('blog.index') }}">Blog</a>
                 </li>
                 <li class="nav-item">
-                <a class="nav-link" href="https://github.com/fabiospanoo" target="_blank">Github</a>
+                <a class="nav-link" href="https://github.com/fabiospanoo" target="_blank" rel="noopener noreferrer">Github &#x2197;</a>
                 </li>
                 <li class="nav-item">
                 <a class="nav-link {{ Route::currentRouteName() == 'contact' ? 'active' : '' }}" href="{{ route('contact') }}">Contact</a>

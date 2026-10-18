@@ -8,9 +8,6 @@
     <meta name="robots" content="noindex, nofollow">
     <title>{{ $title }}</title>
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     @vite(['resources/css/admin.css'])
 </head>
 <body>

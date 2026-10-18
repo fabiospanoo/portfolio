@@ -32,22 +32,35 @@ class ProjectCard extends Component
     private const FALLBACK_TAG_CLASS = 'project-tag-4';
 
     /** Ordered cycle of the button styles. */
-    private const BUTTON_CLASSES = ['primary', 'tertiary', 'quinary', 'secondary', 'quaternary', 'senary'];
+    private const BUTTON_CLASSES = ['primary', 'tertiary', 'secondary', 'quaternary', 'senary', 'quinary'];
 
     /** Button style => hue. */
     private const BUTTON_COLORS = [
         'primary' => '#B100CD',
         'tertiary' => '#CE9178',
-        'quinary' => '#9CDCFE',
         'secondary' => '#DCDCAA',
         'quaternary' => '#569CD6',
         'senary' => '#6A9955',
+        'quinary' => '#9CDCFE',
     ];
+
+    private static int $lastAssignedIdx = -1;
+
+    private static int $lastIndex = -1;
+
+    private ?string $resolvedButtonClass = null;
 
     public function __construct(
         public readonly Project $project,
         public readonly int $index = 0,
+        public readonly ?string $button = null,
     ) {}
+
+    public static function resetCycle(): void
+    {
+        self::$lastAssignedIdx = -1;
+        self::$lastIndex = -1;
+    }
 
     public function tagClass(string $tag): string
     {
@@ -55,28 +68,50 @@ class ProjectCard extends Component
     }
 
     /**
-     * Button style for this card, starting from $index and advanced until
-     * its hue does not collide with any tag hue shown on the same card.
+     * Button style for this card. Continuously cycles through BUTTON_CLASSES
+     * across cards so adjacent cards never share the same button style,
+     * while skipping any button hue that collides with the card's tags.
      */
     public function buttonClass(): string
     {
+        if ($this->button !== null) {
+            return $this->button;
+        }
+
+        if ($this->resolvedButtonClass !== null) {
+            return $this->resolvedButtonClass;
+        }
+
         $count = count(self::BUTTON_CLASSES);
-        $idx = $this->index % $count;
+
+        if ($this->index === 0 || $this->index <= self::$lastIndex) {
+            self::$lastAssignedIdx = ($this->index === 0) ? -1 : ($this->index - 1 + $count) % $count;
+        }
+        self::$lastIndex = $this->index;
 
         $tagHues = collect($this->project->tags ?? [])
-            ->map(fn (string $tag) => self::TAG_COLORS[$this->tagClass($tag)])
+            ->map(fn (string $tag) => self::TAG_COLORS[$this->tagClass($tag)] ?? null)
+            ->filter()
             ->unique()
             ->values()
             ->all();
 
+        $idx = (self::$lastAssignedIdx + 1) % $count;
+        $attempts = 0;
+
         while (
-            isset(self::BUTTON_COLORS[self::BUTTON_CLASSES[$idx]])
+            $attempts < $count
+            && isset(self::BUTTON_COLORS[self::BUTTON_CLASSES[$idx]])
             && in_array(self::BUTTON_COLORS[self::BUTTON_CLASSES[$idx]], $tagHues, true)
         ) {
             $idx = ($idx + 1) % $count;
+            $attempts++;
         }
 
-        return self::BUTTON_CLASSES[$idx];
+        self::$lastAssignedIdx = $idx;
+        $this->resolvedButtonClass = self::BUTTON_CLASSES[$idx];
+
+        return $this->resolvedButtonClass;
     }
 
     public function render(): View|Closure|string

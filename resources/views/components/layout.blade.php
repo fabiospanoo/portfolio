@@ -8,10 +8,7 @@
     <title>{{ $title }}</title>
     <x-seo :title="$title" :meta-description="$metaDescription" :meta-type="$metaType" :meta-image="$metaImage" />
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">   
-    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+    <link rel="stylesheet" href="{{ asset('vendor/aos/aos.css') }}">
     @vite(['resources/css/app.css','resources/js/app.js'])
 </head>
 <body>
@@ -23,38 +20,17 @@
 
     <x-footer/>
 
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="{{ asset('vendor/aos/aos.js') }}"></script>
     <script>
         AOS.init({
             once: true,
-            duration: 700,
+            duration: 850,
+            offset: 30,
+            easing: 'ease-out-cubic',
         });
-
-        document.addEventListener('click', function (e) {
-            const link = e.target.closest('a[href^="copy:"]');
-            if (!link) return;
-            e.preventDefault();
-
-            const value = link.getAttribute('href').replace('copy:', '');
-            const original = link.textContent;
-
-            const copied = () => {
-                link.textContent = 'copied!';
-                link.style.color = 'var(--color-c)';
-                setTimeout(() => {
-                    link.textContent = original;
-                    link.style.color = '';
-                }, 1500);
-            };
-
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(value).then(copied).catch(() => {
-                    window.prompt('Copy email:', value);
-                });
-            } else {
-                window.prompt('Copy email:', value);
-            }
-        });
+        if (window.__applyProjectsLayout) {
+            window.__applyProjectsLayout();
+        }
     </script>
 </body>
 </html>

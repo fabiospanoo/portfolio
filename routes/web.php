@@ -1,11 +1,11 @@
-﻿<?php
+<?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PublicController;
-use App\Http\Controllers\BlogController;
 use App\Http\Controllers\Admin\AuthController;
-use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\Admin\ProjectController;
+use App\Http\Controllers\BlogController;
+use App\Http\Controllers\PublicController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PublicController::class, 'projects'])->name('projects');
 
@@ -26,13 +26,13 @@ Route::get('/sitemap.xml', [PublicController::class, 'sitemap'])->name('sitemap'
 */
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('admin.login');
-Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:6,1')->name('admin.login.submit');
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:admin-login')->name('admin.login.submit');
 
 Route::get('/login/2fa', [AuthController::class, 'show2fa'])->name('admin.2fa');
-Route::post('/login/2fa', [AuthController::class, 'verify2fa'])->middleware('throttle:6,1')->name('admin.2fa.verify');
+Route::post('/login/2fa', [AuthController::class, 'verify2fa'])->middleware('throttle:admin-2fa')->name('admin.2fa.verify');
 
 Route::get('/login/setup', [AuthController::class, 'showSetup'])->name('admin.setup');
-Route::post('/login/setup', [AuthController::class, 'confirmSetup'])->middleware('throttle:6,1')->name('admin.setup.confirm');
+Route::post('/login/setup', [AuthController::class, 'confirmSetup'])->middleware('throttle:admin-2fa')->name('admin.setup.confirm');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
@@ -53,4 +53,3 @@ Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/audit', [ProjectController::class, 'audit'])->name('audit');
 });
-

@@ -3,6 +3,7 @@
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureSchemaMigrated;
 use App\Http\Middleware\ForceCanonicalDomain;
+use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -19,12 +20,20 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => EnsureAdmin::class,
         ]);
 
-        $middleware->web(prepend: [
-            EnsureSchemaMigrated::class,
-            ForceCanonicalDomain::class,
-        ]);
+        $middleware->web(
+            prepend: [
+                EnsureSchemaMigrated::class,
+                ForceCanonicalDomain::class,
+            ],
+            append: [
+                SecurityHeaders::class,
+            ],
+        );
 
-        $middleware->trustProxies(at: '*');
+        $trustedProxies = env('TRUSTED_PROXIES', '*');
+        if ($trustedProxies !== '' && $trustedProxies !== null) {
+            $middleware->trustProxies(at: $trustedProxies === '*' ? '*' : explode(',', (string) $trustedProxies));
+        }
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

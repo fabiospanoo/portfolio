@@ -2,16 +2,26 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Prunable;
 
 class AdminAuditLog extends Model
 {
+    use Prunable;
+
     public const EVENT_PASSWORD_OK = 'password_ok';
+
     public const EVENT_PASSWORD_FAILED = 'password_failed';
+
     public const EVENT_TOTP_OK = 'totp_ok';
+
     public const EVENT_TOTP_FAILED = 'totp_failed';
+
     public const EVENT_LOGIN_SUCCESS = 'login_success';
+
     public const EVENT_LOGOUT = 'logout';
+
     public const EVENT_TOTP_RESET = 'totp_reset';
 
     protected $fillable = ['event', 'ip', 'user_agent'];
@@ -45,5 +55,10 @@ class AdminAuditLog extends Model
             self::EVENT_PASSWORD_FAILED,
             self::EVENT_TOTP_FAILED,
         ], true);
+    }
+
+    public function prunable(): Builder
+    {
+        return static::where('created_at', '<=', now()->subDays(90));
     }
 }

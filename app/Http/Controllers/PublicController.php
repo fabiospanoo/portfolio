@@ -2,37 +2,69 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ContactMessage;
+use App\Models\Post;
+use App\Models\Project;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
-use App\Models\Project;
-use App\Models\Post;
 
 class PublicController extends Controller
 {
-    public function projects(){
+    public function projects(): View
+    {
         return view('projects', [
             'projects' => Project::all(),
             'latestPost' => Post::latest()->first(),
         ]);
     }
 
-    public function contact(){
+    public function contact(): View
+    {
         return view('contact');
     }
 
-    public function sendContact(Request $request){
+    public function sendContact(Request $request): RedirectResponse|JsonResponse
+    {
+        if ($request->filled('_hp_company')) {
+            if ($request->expectsJson()) {
+                return response()->json(['ok' => true]);
+            }
+
+            return redirect()->route('contact')->with('success', 'Message sent! I will get back to you soon.');
+        }
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
             'message' => ['required', 'string', 'min:10'],
+            'attachment' => ['nullable', 'file', 'max:2048', 'mimes:pdf,doc,docx,odt,txt,rtf,png,jpg,jpeg,webp,svg,zip'],
         ]);
 
-        Mail::send('emails.contact', ['contactData' => $validated], function ($message) use ($validated){
-            $message->to('fabiospanoo@outlook.it')
-                    ->replyTo($validated['email'])
-                    ->subject('New message from contact form');
-        });
+        $attachmentData = null;
+        if ($request->hasFile('attachment') && $request->file('attachment')->isValid()) {
+            $file = $request->file('attachment');
+            $attachmentData = [
+                'path' => $file->getRealPath(),
+                'name' => $file->getClientOriginalName(),
+                'mime' => $file->getClientMimeType() ?: $file->getMimeType(),
+            ];
+        }
+
+        $contactData = [
+            'name' => (string) $validated['name'],
+            'email' => (string) $validated['email'],
+            'message' => (string) $validated['message'],
+        ];
+
+        Mail::to('fabiospanoo@outlook.it')->send(new ContactMessage($contactData, $attachmentData));
+
+        if ($request->expectsJson()) {
+            return response()->json(['ok' => true]);
+        }
 
         return redirect()->route('contact')->with('success', 'Message sent! I will get back to you soon.');
     }
