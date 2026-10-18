@@ -171,6 +171,23 @@ class AuthController extends Controller
         return redirect()->route('admin.projects.index');
     }
 
+    public function reset2fa(Request $request): RedirectResponse
+    {
+        if (! $request->session()->get('admin_authenticated')) {
+            return redirect()->route('admin.login');
+        }
+
+        $credential = AdminCredential::current();
+        $credential->forceFill([
+            'totp_secret' => null,
+            'totp_confirmed_at' => null,
+        ])->save();
+
+        $request->session()->forget(['admin_pending_secret', 'admin_2fa_verified']);
+
+        return redirect()->route('admin.setup');
+    }
+
     public function logout(Request $request): RedirectResponse
     {
         AdminAuditLog::record(AdminAuditLog::EVENT_LOGOUT, $request->ip(), $request->userAgent());

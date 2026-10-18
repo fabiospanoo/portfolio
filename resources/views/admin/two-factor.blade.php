@@ -17,5 +17,12 @@
 
             <button type="submit" class="btn btn-quaternary w-100">Verify</button>
         </form>
+
+        <form action="{{ route('admin.2fa.reset') }}" method="POST" class="mt-3 text-center" onsubmit="return confirm('Reset 2FA and configure a new QR code?');">
+            @csrf
+            <button type="submit" class="btn btn-link text-comment p-0" style="font-size: 0.82rem; text-decoration: none;">
+                Lost authenticator app? Reset 2FA
+            </button>
+        </form>
     </div>
 </x-admin-layout>

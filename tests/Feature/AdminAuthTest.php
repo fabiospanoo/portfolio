@@ -16,6 +16,11 @@ it('blocks the admin area without an authenticated session', function () {
     $this->get('/admin/projects')->assertRedirect(route('admin.login'));
 });
 
+it('redirects /admin and /admin/login to /login', function () {
+    $this->get('/admin')->assertRedirect('/login');
+    $this->get('/admin/login')->assertRedirect('/login');
+});
+
 it('rejects an invalid admin password', function () {
     Config::set('admin.password', 'secret123');
 
@@ -111,4 +116,25 @@ it('supports legacy plaintext TOTP secrets from production database without erro
     $this->post('/login', ['password' => 'secret123']);
     $this->post('/login/2fa', ['code' => $code])
         ->assertRedirect(route('admin.projects.index'));
+});
+
+it('resets 2FA credentials and redirects to setup when admin is password authenticated', function () {
+    $secret = app(TotpService::class)->generateSecret();
+    $cred = AdminCredential::create([
+        'totp_secret' => $secret,
+        'totp_confirmed_at' => now(),
+    ]);
+
+    $this->withSession(['admin_authenticated' => true])
+        ->post(route('admin.2fa.reset'))
+        ->assertRedirect(route('admin.setup'));
+
+    $cred->refresh();
+    expect($cred->totp_secret)->toBeNull()
+        ->and($cred->totp_confirmed_at)->toBeNull();
+});
+
+it('blocks 2FA reset when not password authenticated', function () {
+    $this->post(route('admin.2fa.reset'))
+        ->assertRedirect(route('admin.login'));
 });

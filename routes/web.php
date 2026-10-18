@@ -25,11 +25,15 @@ Route::get('/sitemap.xml', [PublicController::class, 'sitemap'])->name('sitemap'
 |--------------------------------------------------------------------------
 */
 
+Route::redirect('/admin', '/login');
+Route::redirect('/admin/login', '/login');
+
 Route::get('/login', [AuthController::class, 'showLogin'])->name('admin.login');
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:admin-login')->name('admin.login.submit');
 
 Route::get('/login/2fa', [AuthController::class, 'show2fa'])->name('admin.2fa');
 Route::post('/login/2fa', [AuthController::class, 'verify2fa'])->middleware('throttle:admin-2fa')->name('admin.2fa.verify');
+Route::match(['GET', 'POST'], '/login/2fa/reset', [AuthController::class, 'reset2fa'])->name('admin.2fa.reset');
 
 Route::get('/login/setup', [AuthController::class, 'showSetup'])->name('admin.setup');
 Route::post('/login/setup', [AuthController::class, 'confirmSetup'])->middleware('throttle:admin-2fa')->name('admin.setup.confirm');
