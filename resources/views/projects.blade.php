@@ -1,4 +1,4 @@
-<x-layout title="Fabio Spanò // Agentic AI, Java, Web Developer" navbarBrand="fabio spanò" metaDescription="Portfolio of Fabio Spanò, web developer and agentic AI specialist. Projects built with Java, Laravel, Blade and more.">
+<x-layout title="Fabio Spanò // Agentic AI, Java, Web Developer" navbarBrand="fabio spanò" metaDescription="Portfolio of Fabio Spanò, web developer and agentic AI specialist. Projects built with Java, Laravel, Blade and more." :projects="$projects">
     <div class="body-style">
         <header>
             <div class="header-custom">
@@ -16,7 +16,7 @@
                     <div class="card card-proj text-bg-dark" style="width: 18rem;" data-aos="fade-up" data-aos-delay="400">
                         <div class="card-body blog-card-body">
                             <h6 class="card-subtitle subtitle mb-3 text-uppercase"><span class="text-comment">./</span> Latest from the blog</h6>
-                            <h5 class="card-title bold mb-2">{{ \Illuminate\Support\Str::limit($latestPost->title, 45, '...') }}</h5>
+                            <h5 class="card-title bold mb-2"><a href="{{ route('blog.show', $latestPost) }}">{{ \Illuminate\Support\Str::limit($latestPost->title, 45, '...') }}</a></h5>
                             <p class="card-text blog-card-preview">{{ \Illuminate\Support\Str::limit($latestPost->content, 65, '...') }}</p>
                             <a href="{{ route('blog.show', $latestPost) }}" class="card-link d-inline-flex align-items-center gap-2"><span>Read post</span> <i class="bi bi-arrow-right icon-arrow-right"></i></a>
                         </div>

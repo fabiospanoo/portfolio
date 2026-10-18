@@ -1,7 +1,8 @@
 <x-layout
     :title="$post->title.' // Fabio Spanò'"
     :meta-description="\Illuminate\Support\Str::limit($post->content, 160)"
-    metaType="article">
+    metaType="article"
+    :post="$post">
     <div class="body-style">
         <main class="blog-article">
             <a class="blog-back-link d-inline-flex align-items-center gap-2" href="{{ route('blog.index') }}" data-aos="fade-up"><i class="bi bi-arrow-left icon-arrow-left"></i> <span>Back to blog</span></a>

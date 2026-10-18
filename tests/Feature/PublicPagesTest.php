@@ -186,3 +186,68 @@ it('accepts json contact submission when honeypot is filled and returns ok witho
 
     Mail::assertNothingSent();
 });
+
+it('renders schema.org structured data and hreflang tags on home page', function () {
+    $project = Project::factory()->create([
+        'title' => 'Sample Project',
+        'url' => 'https://github.com/fabiospanoo/sample',
+        'tags' => ['java', 'spring'],
+    ]);
+
+    $response = $this->get('/')->assertOk();
+    $content = $response->getContent();
+
+    preg_match('/<script type="application\/ld\+json">(.*?)<\/script>/s', $content, $matches);
+    expect($matches)->not->toBeEmpty();
+    $decoded = json_decode($matches[1], true);
+    expect(json_last_error())->toBe(JSON_ERROR_NONE)
+        ->and($decoded)->toHaveKey('@graph');
+
+    expect($content)->toContain('<script type="application/ld+json">')
+        ->toContain('"@type": "Person"')
+        ->toContain('"name": "Fabio Spanò"')
+        ->toContain('"@type": "WebSite"')
+        ->toContain('"@type": "ProfilePage"')
+        ->toContain('"@type": "ItemList"')
+        ->toContain('"@type": "SoftwareSourceCode"')
+        ->toContain('Sample Project')
+        ->toContain('hreflang="en"')
+        ->toContain('hreflang="x-default"')
+        ->toContain('property="og:locale" content="en_US"')
+        ->toContain('property="og:locale:alternate" content="it_IT"');
+});
+
+it('renders schema.org blog posting structured data on article page', function () {
+    $post = Post::factory()->create([
+        'title' => 'Understanding Agentic AI',
+        'category' => 'AI',
+    ]);
+
+    $response = $this->get("/blog/{$post->slug}")->assertOk();
+    $content = $response->getContent();
+
+    preg_match('/<script type="application\/ld\+json">(.*?)<\/script>/s', $content, $matches);
+    expect($matches)->not->toBeEmpty();
+    $decoded = json_decode($matches[1], true);
+    expect(json_last_error())->toBe(JSON_ERROR_NONE)
+        ->and($decoded)->toHaveKey('@graph');
+
+    expect($content)->toContain('<script type="application/ld+json">')
+        ->toContain('"@type": "BlogPosting"')
+        ->toContain('Understanding Agentic AI')
+        ->toContain('"articleSection": "AI"');
+});
+
+it('renders schema.org contact page structured data on contact page', function () {
+    $response = $this->get('/contact')->assertOk();
+    $content = $response->getContent();
+
+    preg_match('/<script type="application\/ld\+json">(.*?)<\/script>/s', $content, $matches);
+    expect($matches)->not->toBeEmpty();
+    $decoded = json_decode($matches[1], true);
+    expect(json_last_error())->toBe(JSON_ERROR_NONE)
+        ->and($decoded)->toHaveKey('@graph');
+
+    expect($content)->toContain('<script type="application/ld+json">')
+        ->toContain('"@type": "ContactPage"');
+});

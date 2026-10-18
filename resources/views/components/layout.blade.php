@@ -1,12 +1,26 @@
-@props(['title', 'navbarBrand' => null, 'metaDescription' => null, 'metaType' => 'website', 'metaImage' => null])
+@props([
+    'title',
+    'navbarBrand' => null,
+    'metaDescription' => null,
+    'metaType' => 'website',
+    'metaImage' => null,
+    'post' => null,
+    'projects' => null,
+])
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title }}</title>
-    <x-seo :title="$title" :meta-description="$metaDescription" :meta-type="$metaType" :meta-image="$metaImage" />
+    <x-seo
+        :title="$title"
+        :meta-description="$metaDescription"
+        :meta-type="$metaType"
+        :meta-image="$metaImage"
+        :post="$post"
+        :projects="$projects" />
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     <link rel="stylesheet" href="{{ asset('vendor/aos/aos.css') }}">
     @vite(['resources/css/app.css','resources/js/app.js'])
