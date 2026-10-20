@@ -1026,3 +1026,25 @@ body::-webkit-scrollbar{
         padding-right: 200px;
     }
 }
+
+.home-code-background {
+    position: relative;
+    display: flow-root;
+}
+
+.home-code-background > .code-background-frame {
+    position: absolute;
+    left: 0;
+    top: var(--code-background-top, 0px);
+    height: var(--code-background-height, 0px);
+    z-index: 0;
+    width: 100vw;
+    border: 0;
+    pointer-events: none;
+}
+
+.home-code-background .min-vh-100,
+.home-code-background .footer-custom {
+    position: relative;
+    z-index: 1;
+}
