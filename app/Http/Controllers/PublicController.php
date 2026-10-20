@@ -77,72 +77,75 @@ class PublicController extends Controller
             'message' => (string) $validated['message'],
         ];
 
-        $apiKey = config('services.resend.key');
+        $resendKey = config('services.resend.key');
+        $formspreeId = config('services.formspree.id');
 
-        if (! filled($apiKey)) {
-            Log::error('Resend API key is not configured in services.resend.key.');
+        $sent = false;
 
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'message' => 'Unable to send message at this time. Please try again later.',
-                ], 500);
-            }
+        if (filled($resendKey)) {
+            try {
+                $mail = new ContactMessage($contactData, $attachmentData);
+                $payload = [
+                    'from' => sprintf('%s <%s>', config('mail.from.name'), config('mail.from.address')),
+                    'to' => ['fabiospanoo@outlook.it'],
+                    'reply_to' => [$contactData['email']],
+                    'subject' => $mail->envelope()->subject,
+                    'html' => $mail->render(),
+                ];
 
-            return redirect()->route('contact')->withErrors([
-                'email' => 'Unable to send message at this time. Please try again later.',
-            ]);
-        }
-
-        $mail = new ContactMessage($contactData, $attachmentData);
-        $payload = [
-            'from' => sprintf('%s <%s>', config('mail.from.name'), config('mail.from.address')),
-            'to' => ['fabiospanoo@outlook.it'],
-            'reply_to' => [$contactData['email']],
-            'subject' => $mail->envelope()->subject,
-            'html' => $mail->render(),
-        ];
-
-        if ($attachmentData !== null) {
-            $fileContents = file_get_contents($attachmentData['path']);
-
-            if ($fileContents === false) {
-                Log::error('Unable to read contact form attachment contents.');
-
-                if ($request->expectsJson()) {
-                    return response()->json([
-                        'message' => 'Unable to read the uploaded attachment. Please try again.',
-                    ], 422);
+                if ($attachmentData !== null && file_exists($attachmentData['path'])) {
+                    $fileContents = file_get_contents($attachmentData['path']);
+                    if ($fileContents !== false) {
+                        $payload['attachments'] = [[
+                            'filename' => $attachmentData['name'],
+                            'content' => base64_encode($fileContents),
+                        ]];
+                    }
                 }
 
-                return redirect()->route('contact')->withErrors([
-                    'attachment' => 'Unable to read the uploaded attachment. Please try again.',
-                ]);
-            }
+                Http::timeout(15)
+                    ->withToken($resendKey)
+                    ->post('https://api.resend.com/emails', $payload)
+                    ->throw();
 
-            $payload['attachments'] = [[
-                'filename' => $attachmentData['name'],
-                'content' => base64_encode($fileContents),
-            ]];
+                $sent = true;
+            } catch (\Throwable $e) {
+                Log::warning('Resend email delivery failed, falling back: '.$e->getMessage());
+            }
         }
 
-        try {
-            Http::timeout(30)
-                ->withToken($apiKey)
-                ->post('https://api.resend.com/emails', $payload)
-                ->throw();
-        } catch (\Throwable $e) {
-            Log::error('Failed to send contact message via Resend', [
-                'error' => $e->getMessage(),
-            ]);
+        if (! $sent && filled($formspreeId)) {
+            try {
+                $formspreePayload = [
+                    'name' => $contactData['name'],
+                    'email' => $contactData['email'],
+                    'message' => $contactData['message'],
+                    '_subject' => 'New message from portfolio: '.$contactData['name'],
+                ];
 
+                $response = Http::timeout(15)
+                    ->withHeaders(['Accept' => 'application/json'])
+                    ->post("https://formspree.io/f/{$formspreeId}", $formspreePayload);
+
+                if ($response->successful()) {
+                    $sent = true;
+                } else {
+                    Log::error('Formspree delivery failed: '.$response->body());
+                }
+            } catch (\Throwable $e) {
+                Log::error('Formspree delivery exception: '.$e->getMessage());
+            }
+        }
+
+        if (! $sent) {
             if ($request->expectsJson()) {
                 return response()->json([
-                    'message' => 'Unable to send message at this time. Please try again later.',
+                    'message' => 'Unable to send message at this time. Please try again later or email me directly at fabiospanoo@outlook.it.',
                 ], 500);
             }
 
             return redirect()->route('contact')->withErrors([
-                'email' => 'Unable to send message at this time. Please try again later.',
+                'email' => 'Unable to send message at this time. Please try again later or email me directly at fabiospanoo@outlook.it.',
             ]);
         }
 

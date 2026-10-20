@@ -63,8 +63,7 @@ it('serves the contact page', function () {
     $this->get('/contact')
         ->assertOk()
         ->assertSee('Send message')
-        ->assertSee('action="'.route('contact.send').'"', false)
-        ->assertDontSee('formspree.io');
+        ->assertSee('formspree.io/f/');
 });
 
 it('returns a valid sitemap', function () {
@@ -200,37 +199,48 @@ it('accepts json contact submission when honeypot is filled and returns ok witho
     Http::assertNothingSent();
 });
 
-it('does not report success when Resend rejects the contact email', function () {
+it('falls back to Formspree when Resend is unavailable', function () {
+    config(['services.resend.key' => null]);
+    config(['services.formspree.id' => 'test-form-id']);
+
     Http::fake([
-        'https://api.resend.com/emails' => Http::response(['message' => 'Rejected'], 422),
+        'https://formspree.io/f/test-form-id' => Http::response(['ok' => true], 200),
     ]);
 
     $response = $this->postJson('/contact', [
-        'name' => 'Delivery Failure',
-        'email' => 'failure@example.com',
-        'message' => 'This message should not be reported as delivered.',
+        'name' => 'Fallback Sender',
+        'email' => 'fallback@example.com',
+        'message' => 'This message should go through Formspree fallback.',
     ]);
 
-    $response->assertServerError()
-        ->assertJson([
-            'message' => 'Unable to send message at this time. Please try again later.',
-        ])
-        ->assertJsonMissing(['message' => 'Rejected']);
+    $response->assertOk()
+        ->assertJson(['ok' => true]);
+
+    Http::assertSent(function (HttpRequest $request) {
+        return $request->url() === 'https://formspree.io/f/test-form-id'
+            && $request['email'] === 'fallback@example.com';
+    });
 });
 
-it('gracefully fails without leaking when Resend API key is missing', function () {
+it('gracefully fails without leaking when both email services fail', function () {
     config(['services.resend.key' => null]);
+    config(['services.formspree.id' => 'test-form-id']);
+
+    Http::fake([
+        'https://formspree.io/f/test-form-id' => Http::response(['error' => 'Form not found'], 404),
+    ]);
 
     $response = $this->postJson('/contact', [
-        'name' => 'Missing Key',
-        'email' => 'missing@example.com',
-        'message' => 'This message tests missing API key behavior.',
+        'name' => 'Both Failed',
+        'email' => 'failed@example.com',
+        'message' => 'This message tests complete failure handling.',
     ]);
 
     $response->assertServerError()
         ->assertJson([
-            'message' => 'Unable to send message at this time. Please try again later.',
-        ]);
+            'message' => 'Unable to send message at this time. Please try again later or email me directly at fabiospanoo@outlook.it.',
+        ])
+        ->assertJsonMissing(['error' => 'Form not found']);
 });
 
 it('renders schema.org structured data and hreflang tags on home page', function () {
