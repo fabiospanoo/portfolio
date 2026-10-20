@@ -63,7 +63,7 @@ it('serves the contact page', function () {
     $this->get('/contact')
         ->assertOk()
         ->assertSee('Send message')
-        ->assertSee('formspree.io/f/');
+        ->assertSee('action="'.route('contact.send').'"', false);
 });
 
 it('returns a valid sitemap', function () {
