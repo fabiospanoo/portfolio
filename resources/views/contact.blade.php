@@ -12,25 +12,22 @@
                     <div class="alert alert-success py-2 px-3" role="alert">{{ session('success') }}</div>
                 @endif
 
-                @php($formId = config('services.formspree.id'))
-
-                <div id="contact-success" class="alert py-3 px-3 d-none" role="alert" style="background-color:#161617;border:1px solid #343434;color:#6A9955;font-family:'Space Mono',monospace;">
+                <div id="contact-success" class="alert py-3 px-3 d-none" role="alert" style="background-color:var(--color-nav-bg);border:1px solid var(--color-nav-bord);color:var(--color-c);font-family:'Space Mono',monospace;">
                     <span class="text-keyword">&gt;</span> message delivered! I'll get back to you soon.
                 </div>
-                <div id="contact-error" class="alert py-3 px-3 d-none" role="alert" style="background-color:#161617;border:1px solid #343434;color:#F14C4C;font-family:'Space Mono',monospace;">
+                <div id="contact-error" class="alert py-3 px-3 d-none" role="alert" style="background-color:var(--color-nav-bg);border:1px solid var(--color-nav-bord);color:#F14C4C;font-family:'Space Mono',monospace;">
                     <span class="text-keyword">&gt;</span> <span id="contact-error-text">something went wrong. try again, or email me directly at fabiospanoo@outlook.it</span>
                 </div>
 
                 <form id="contact-form" class="contact-form" data-aos="fade-up" data-aos-delay="450" method="POST"
-                    action="{{ $formId ? 'https://formspree.io/f/' . $formId : route('contact.send') }}"
+                    action="{{ route('contact.send') }}"
                     enctype="multipart/form-data"
                     accept-charset="UTF-8">
                     @csrf
-                    <input type="hidden" name="_subject" value="New message from your website">
 
                     <div style="position: absolute; left: -9999px; top: -9999px;" aria-hidden="true">
                         <label for="_hp_company">Do not fill this field</label>
-                        <input type="text" name="_hp_company" id="_hp_company" tabindex="-1" autocomplete="off" value="">
+                        <input type="text" name="_hp_company" id="_hp_company" tabindex="-1" autocomplete="off" value="" data-1p-ignore="true" data-lpignore="true" data-form-type="other">
                     </div>
 
                     <div class="row g-3">
@@ -191,15 +188,11 @@
                         const errorEl = document.getElementById('contact-error');
                         const errorTextEl = document.getElementById('contact-error-text');
                         const successEl = document.getElementById('contact-success');
-                        const attachmentInput = document.getElementById('attachment');
-                        const hasAttachment = attachmentInput && attachmentInput.files && attachmentInput.files.length > 0;
 
                         button.disabled = true;
                         if (errorEl) errorEl.classList.add('d-none');
 
                         const localAction = '{{ route('contact.send') }}';
-                        const formspreeAction = '{{ $formId ? "https://formspree.io/f/" . $formId : route("contact.send") }}';
-                        const targetUrl = hasAttachment ? localAction : formspreeAction;
                         const formData = new FormData(form);
 
                         function showError(msg) {
@@ -237,9 +230,9 @@
                             return data.message || null;
                         }
 
-                        fetch(targetUrl, {
+                        fetch(localAction, {
                                 method: 'POST',
-                                headers: targetUrl === localAction ? localHeaders : { 'Accept': 'application/json' },
+                                headers: localHeaders,
                                 body: formData
                             })
                             .then(async r => {
@@ -252,25 +245,6 @@
                                 if (successEl) successEl.classList.remove('d-none');
                             })
                             .catch(err => {
-                                if (targetUrl !== localAction) {
-                                    return fetch(localAction, {
-                                        method: 'POST',
-                                        headers: localHeaders,
-                                        body: formData
-                                    })
-                                    .then(async r2 => {
-                                        const d2 = await r2.json().catch(() => ({}));
-                                        if (!r2.ok) {
-                                            const errMsg2 = extractErrorMessage(d2) || 'Submission failed';
-                                            throw new Error(errMsg2);
-                                        }
-                                        form.classList.add('d-none');
-                                        if (successEl) successEl.classList.remove('d-none');
-                                    })
-                                    .catch(err2 => {
-                                        showError(err2.message || err.message);
-                                    });
-                                }
                                 showError(err.message);
                             })
                             .finally(() => { button.disabled = false; });

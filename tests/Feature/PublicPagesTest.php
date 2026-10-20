@@ -1,11 +1,16 @@
 <?php
 
-use App\Mail\ContactMessage;
 use App\Models\Post;
 use App\Models\Project;
 use App\View\Components\ProjectCard;
+use Illuminate\Http\Client\Request as HttpRequest;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Http;
+
+beforeEach(function () {
+    config(['services.resend.key' => 'test-resend-api-key']);
+    Http::preventStrayRequests();
+});
 
 it('serves the home page', function () {
     $this->get('/')->assertOk();
@@ -55,7 +60,11 @@ it('returns a custom 404 for a missing post', function () {
 });
 
 it('serves the contact page', function () {
-    $this->get('/contact')->assertOk()->assertSee('Send message');
+    $this->get('/contact')
+        ->assertOk()
+        ->assertSee('Send message')
+        ->assertSee('action="'.route('contact.send').'"', false)
+        ->assertDontSee('formspree.io');
 });
 
 it('returns a valid sitemap', function () {
@@ -70,7 +79,9 @@ it('returns a valid sitemap', function () {
 });
 
 it('sends contact email on valid submission without honeypot', function () {
-    Mail::fake();
+    Http::fake([
+        'https://api.resend.com/emails' => Http::response(['id' => 'test-email-id'], 200),
+    ]);
 
     $this->post('/contact', [
         'name' => 'John Doe',
@@ -79,12 +90,16 @@ it('sends contact email on valid submission without honeypot', function () {
     ])->assertRedirect(route('contact'))
         ->assertSessionHas('success');
 
-    Mail::assertSentCount(1);
+    Http::assertSent(function (HttpRequest $request) {
+        return $request->url() === 'https://api.resend.com/emails'
+            && $request['to'] === ['fabiospanoo@outlook.it']
+            && $request['reply_to'] === ['john@example.com']
+            && $request['subject'] === 'New message from contact form'
+            && str_contains($request['html'], 'This is a genuine inquiry message about your projects.');
+    });
 });
 
 it('silently discards contact submission when honeypot is filled', function () {
-    Mail::fake();
-
     $this->post('/contact', [
         '_hp_company' => 'Bot Spammer Inc.',
         'name' => 'Bot',
@@ -93,11 +108,13 @@ it('silently discards contact submission when honeypot is filled', function () {
     ])->assertRedirect(route('contact'))
         ->assertSessionHas('success');
 
-    Mail::assertNothingSent();
+    Http::assertNothingSent();
 });
 
 it('sends contact email with valid attachment under 2mb', function () {
-    Mail::fake();
+    Http::fake([
+        'https://api.resend.com/emails' => Http::response(['id' => 'test-email-id'], 200),
+    ]);
 
     $file = UploadedFile::fake()->create('specs.pdf', 500, 'application/pdf');
 
@@ -109,17 +126,15 @@ it('sends contact email with valid attachment under 2mb', function () {
     ])->assertRedirect(route('contact'))
         ->assertSessionHas('success');
 
-    Mail::assertSent(ContactMessage::class, function (ContactMessage $mail) {
-        return $mail->contactData['name'] === 'Jane Client'
-            && ! empty($mail->attachmentData)
-            && $mail->attachmentData['name'] === 'specs.pdf'
-            && count($mail->attachments()) === 1;
+    Http::assertSent(function (HttpRequest $request) {
+        return $request['to'] === ['fabiospanoo@outlook.it']
+            && str_contains($request['html'], 'Jane Client')
+            && $request['attachments'][0]['filename'] === 'specs.pdf'
+            && base64_decode($request['attachments'][0]['content'], true) !== false;
     });
 });
 
 it('rejects contact attachment exceeding 2mb', function () {
-    Mail::fake();
-
     $largeFile = UploadedFile::fake()->create('large-archive.zip', 2500, 'application/zip');
 
     $this->from('/contact')->post('/contact', [
@@ -130,12 +145,10 @@ it('rejects contact attachment exceeding 2mb', function () {
     ])->assertRedirect('/contact')
         ->assertSessionHasErrors('attachment');
 
-    Mail::assertNothingSent();
+    Http::assertNothingSent();
 });
 
 it('rejects contact attachment with disallowed extension', function () {
-    Mail::fake();
-
     $badFile = UploadedFile::fake()->create('malicious.exe', 100, 'application/x-msdownload');
 
     $this->from('/contact')->post('/contact', [
@@ -146,11 +159,13 @@ it('rejects contact attachment with disallowed extension', function () {
     ])->assertRedirect('/contact')
         ->assertSessionHasErrors('attachment');
 
-    Mail::assertNothingSent();
+    Http::assertNothingSent();
 });
 
 it('accepts json contact submission with attachment and returns ok', function () {
-    Mail::fake();
+    Http::fake([
+        'https://api.resend.com/emails' => Http::response(['id' => 'test-email-id'], 200),
+    ]);
 
     $file = UploadedFile::fake()->create('project-details.pdf', 300, 'application/pdf');
 
@@ -164,16 +179,14 @@ it('accepts json contact submission with attachment and returns ok', function ()
     $response->assertOk()
         ->assertJson(['ok' => true]);
 
-    Mail::assertSent(ContactMessage::class, function (ContactMessage $mail) {
-        return $mail->contactData['name'] === 'Ajax Sender'
-            && ! empty($mail->attachmentData)
-            && $mail->attachmentData['name'] === 'project-details.pdf';
+    Http::assertSent(function (HttpRequest $request) {
+        return $request['to'] === ['fabiospanoo@outlook.it']
+            && str_contains($request['html'], 'Ajax Sender')
+            && $request['attachments'][0]['filename'] === 'project-details.pdf';
     });
 });
 
 it('accepts json contact submission when honeypot is filled and returns ok without sending mail', function () {
-    Mail::fake();
-
     $response = $this->postJson('/contact', [
         '_hp_company' => 'SpamBot',
         'name' => 'Spammer',
@@ -184,7 +197,40 @@ it('accepts json contact submission when honeypot is filled and returns ok witho
     $response->assertOk()
         ->assertJson(['ok' => true]);
 
-    Mail::assertNothingSent();
+    Http::assertNothingSent();
+});
+
+it('does not report success when Resend rejects the contact email', function () {
+    Http::fake([
+        'https://api.resend.com/emails' => Http::response(['message' => 'Rejected'], 422),
+    ]);
+
+    $response = $this->postJson('/contact', [
+        'name' => 'Delivery Failure',
+        'email' => 'failure@example.com',
+        'message' => 'This message should not be reported as delivered.',
+    ]);
+
+    $response->assertServerError()
+        ->assertJson([
+            'message' => 'Unable to send message at this time. Please try again later.',
+        ])
+        ->assertJsonMissing(['message' => 'Rejected']);
+});
+
+it('gracefully fails without leaking when Resend API key is missing', function () {
+    config(['services.resend.key' => null]);
+
+    $response = $this->postJson('/contact', [
+        'name' => 'Missing Key',
+        'email' => 'missing@example.com',
+        'message' => 'This message tests missing API key behavior.',
+    ]);
+
+    $response->assertServerError()
+        ->assertJson([
+            'message' => 'Unable to send message at this time. Please try again later.',
+        ]);
 });
 
 it('renders schema.org structured data and hreflang tags on home page', function () {

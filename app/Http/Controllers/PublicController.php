@@ -8,7 +8,8 @@ use App\Models\Project;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -47,8 +48,24 @@ class PublicController extends Controller
         $attachmentData = null;
         if ($request->hasFile('attachment') && $request->file('attachment')->isValid()) {
             $file = $request->file('attachment');
+            $attachmentPath = $file->getRealPath();
+
+            if ($attachmentPath === false) {
+                Log::error('Unable to read contact form attachment path.');
+
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'message' => 'Unable to read the uploaded attachment. Please try again.',
+                    ], 422);
+                }
+
+                return redirect()->route('contact')->withErrors([
+                    'attachment' => 'Unable to read the uploaded attachment. Please try again.',
+                ]);
+            }
+
             $attachmentData = [
-                'path' => $file->getRealPath(),
+                'path' => $attachmentPath,
                 'name' => $file->getClientOriginalName(),
                 'mime' => $file->getClientMimeType() ?: $file->getMimeType(),
             ];
@@ -60,7 +77,74 @@ class PublicController extends Controller
             'message' => (string) $validated['message'],
         ];
 
-        Mail::to('fabiospanoo@outlook.it')->send(new ContactMessage($contactData, $attachmentData));
+        $apiKey = config('services.resend.key');
+
+        if (! filled($apiKey)) {
+            Log::error('Resend API key is not configured in services.resend.key.');
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Unable to send message at this time. Please try again later.',
+                ], 500);
+            }
+
+            return redirect()->route('contact')->withErrors([
+                'email' => 'Unable to send message at this time. Please try again later.',
+            ]);
+        }
+
+        $mail = new ContactMessage($contactData, $attachmentData);
+        $payload = [
+            'from' => sprintf('%s <%s>', config('mail.from.name'), config('mail.from.address')),
+            'to' => ['fabiospanoo@outlook.it'],
+            'reply_to' => [$contactData['email']],
+            'subject' => $mail->envelope()->subject,
+            'html' => $mail->render(),
+        ];
+
+        if ($attachmentData !== null) {
+            $fileContents = file_get_contents($attachmentData['path']);
+
+            if ($fileContents === false) {
+                Log::error('Unable to read contact form attachment contents.');
+
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'message' => 'Unable to read the uploaded attachment. Please try again.',
+                    ], 422);
+                }
+
+                return redirect()->route('contact')->withErrors([
+                    'attachment' => 'Unable to read the uploaded attachment. Please try again.',
+                ]);
+            }
+
+            $payload['attachments'] = [[
+                'filename' => $attachmentData['name'],
+                'content' => base64_encode($fileContents),
+            ]];
+        }
+
+        try {
+            Http::timeout(30)
+                ->withToken($apiKey)
+                ->post('https://api.resend.com/emails', $payload)
+                ->throw();
+        } catch (\Throwable $e) {
+            Log::error('Failed to send contact message via Resend', [
+                'error' => $e->getMessage(),
+            ]);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Unable to send message at this time. Please try again later.',
+                ], 500);
+            }
+
+            return redirect()->route('contact')->withErrors([
+                'email' => 'Unable to send message at this time. Please try again later.',
+            ]);
+        }
 
         if ($request->expectsJson()) {
             return response()->json(['ok' => true]);

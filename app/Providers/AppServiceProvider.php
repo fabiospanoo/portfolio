@@ -23,9 +23,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         RateLimiter::for('contact', function (Request $request) {
+            $isLocal = app()->isLocal();
+
             return [
-                Limit::perMinute(2)->by($request->ip()),
-                Limit::perMinute(10),
+                Limit::perMinute($isLocal ? 30 : 5)->by($request->ip()),
+                Limit::perMinute($isLocal ? 60 : 20),
             ];
         });
 

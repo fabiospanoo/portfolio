@@ -12,9 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnsureSchemaMigrated
 {
-    public function __construct(protected Application $app)
-    {
-    }
+    public function __construct(protected Application $app) {}
 
     public function handle(Request $request, Closure $next): Response
     {
