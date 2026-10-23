@@ -12,7 +12,7 @@
 </head>
 <body>
     <div class="admin-wrap">
-        @if (session('admin_2fa_verified'))
+        @if (session('admin_2fa_verified') && ! request()->routeIs('admin.login', 'admin.2fa', 'admin.setup'))
             <div class="admin-topbar">
                 <span class="admin-brand">~/admin <span class="text-comment">#</span></span>
                 <nav class="admin-nav">

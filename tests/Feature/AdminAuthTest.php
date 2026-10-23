@@ -21,6 +21,13 @@ it('redirects /admin and /admin/login to /login', function () {
     $this->get('/admin/login')->assertRedirect('/login');
 });
 
+it('redirects an already authenticated admin from login to projects', function () {
+    $this->withSession([
+        'admin_authenticated' => true,
+        'admin_2fa_verified' => true,
+    ])->get('/login')->assertRedirect(route('admin.projects.index'));
+});
+
 it('rejects an invalid admin password', function () {
     Config::set('admin.password', 'secret123');
 

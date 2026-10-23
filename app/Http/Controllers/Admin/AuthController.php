@@ -15,8 +15,16 @@ class AuthController extends Controller
 {
     public function __construct(private readonly TotpService $totp) {}
 
-    public function showLogin(): View
+    public function showLogin(Request $request): View|RedirectResponse
     {
+        if ($request->session()->get('admin_2fa_verified')) {
+            return redirect()->route('admin.projects.index');
+        }
+
+        if ($request->session()->get('admin_authenticated')) {
+            return redirect()->route('admin.2fa');
+        }
+
         return view('admin.login');
     }
 
