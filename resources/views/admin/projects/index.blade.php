@@ -1,12 +1,3 @@
-@php
-    $tagClasses = [
-        'blade' => 'project-tag-0',
-        'java' => 'project-tag-1',
-        'python' => 'project-tag-2',
-        'php' => 'project-tag-3',
-    ];
-@endphp
-
 <x-admin-layout title="projects // admin">
     <div class="admin-head">
         <div>
@@ -37,7 +28,7 @@
 
                     <div class="admin-cell-tags">
                         @forelse ($project->tags ?? [] as $tag)
-                            <span class="project-tag {{ $tagClasses[$tag] ?? 'project-tag-4' }}">{{ $tag }}</span>
+                            <span class="project-tag {{ \App\View\Components\ProjectCard::resolveTagClass($tag) }}">{{ $tag }}</span>
                         @empty
                             <span class="admin-hint">—</span>
                         @endforelse
