@@ -18,7 +18,7 @@ class PublicController extends Controller
     public function projects(): View
     {
         return view('projects', [
-            'projects' => Project::all(),
+            'projects' => Project::orderByDesc('created_at')->orderByDesc('id')->get(),
             'latestPost' => Post::latest()->first(),
         ]);
     }

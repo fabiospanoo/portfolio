@@ -22,6 +22,29 @@ it('shows projects on the home page', function () {
     $this->get('/')->assertOk()->assertSee($project->title);
 });
 
+it('orders projects on the home page from most recent to least recent', function () {
+    $older = Project::factory()->create([
+        'title' => 'Older Alpha Project',
+        'created_at' => now()->subDays(2),
+    ]);
+    $newer = Project::factory()->create([
+        'title' => 'Newer Beta Project',
+        'created_at' => now()->subDay(),
+    ]);
+
+    $this->get('/')
+        ->assertOk()
+        ->assertSeeInOrder([$newer->title, $older->title]);
+});
+
+it('resolves tag classes for newly supported tags', function () {
+    expect(ProjectCard::resolveTagClass('laravel'))->toBe('project-tag-0')
+        ->and(ProjectCard::resolveTagClass('bootstrap'))->toBe('project-tag-3')
+        ->and(ProjectCard::resolveTagClass('fortify'))->toBe('project-tag-3')
+        ->and(ProjectCard::resolveTagClass('livewire'))->toBe('project-tag-0')
+        ->and(ProjectCard::resolveTagClass('unknown-tag'))->toBe('project-tag-4');
+});
+
 it('cycles project button styles continuously without duplicate adjacent styles', function () {
     $p1 = Project::factory()->create(['tags' => ['python']]);
     $p2 = Project::factory()->create(['tags' => ['java', 'blade']]);

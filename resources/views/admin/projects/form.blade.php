@@ -52,7 +52,7 @@
                     @foreach ($tags as $tag)
                         <label class="admin-tag-chip">
                             <input type="checkbox" name="tags[]" value="{{ $tag }}" @checked(in_array($tag, $selectedTags, true))>
-                            <span class="project-tag project-tag-{{ ['blade' => 0, 'java' => 1, 'python' => 2, 'php' => 3][$tag] }}">{{ $tag }}</span>
+                            <span class="project-tag {{ \App\View\Components\ProjectCard::resolveTagClass($tag) }}">{{ $tag }}</span>
                         </label>
                     @endforeach
                 </div>

@@ -24,9 +24,21 @@ class ProjectCard extends Component
     /** Language/technology tag => tag class. */
     private const LANGUAGE_COLORS = [
         'blade' => 'project-tag-0',
+        'laravel' => 'project-tag-0',
+        'livewire' => 'project-tag-0',
         'java' => 'project-tag-1',
+        'javascript' => 'project-tag-1',
+        'scout' => 'project-tag-1',
+        'vite' => 'project-tag-1',
         'python' => 'project-tag-2',
+        'tailwind' => 'project-tag-2',
+        'docker' => 'project-tag-2',
+        'agentic-ai' => 'project-tag-2',
         'php' => 'project-tag-3',
+        'bootstrap' => 'project-tag-3',
+        'fortify' => 'project-tag-3',
+        'mysql' => 'project-tag-3',
+        'linux' => 'project-tag-4',
     ];
 
     private const FALLBACK_TAG_CLASS = 'project-tag-4';
@@ -63,6 +75,11 @@ class ProjectCard extends Component
     }
 
     public function tagClass(string $tag): string
+    {
+        return self::resolveTagClass($tag);
+    }
+
+    public static function resolveTagClass(string $tag): string
     {
         return self::LANGUAGE_COLORS[strtolower($tag)] ?? self::FALLBACK_TAG_CLASS;
     }

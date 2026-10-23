@@ -11,7 +11,24 @@ use Illuminate\View\View;
 
 class ProjectController extends Controller
 {
-    public const TAGS = ['blade', 'java', 'python', 'php'];
+    public const TAGS = [
+        'laravel',
+        'php',
+        'blade',
+        'livewire',
+        'fortify',
+        'bootstrap',
+        'tailwind',
+        'scout',
+        'java',
+        'python',
+        'javascript',
+        'mysql',
+        'docker',
+        'vite',
+        'agentic-ai',
+        'linux',
+    ];
 
     public function index(): View
     {
