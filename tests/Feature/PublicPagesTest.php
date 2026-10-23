@@ -38,11 +38,11 @@ it('orders projects on the home page from most recent to least recent', function
 });
 
 it('resolves tag classes for newly supported tags', function () {
-    expect(ProjectCard::resolveTagClass('laravel'))->toBe('project-tag-0')
-        ->and(ProjectCard::resolveTagClass('bootstrap'))->toBe('project-tag-3')
-        ->and(ProjectCard::resolveTagClass('fortify'))->toBe('project-tag-3')
-        ->and(ProjectCard::resolveTagClass('livewire'))->toBe('project-tag-0')
-        ->and(ProjectCard::resolveTagClass('unknown-tag'))->toBe('project-tag-4');
+    expect(ProjectCard::resolveTagClass('laravel'))->toBe('project-tag-laravel')
+        ->and(ProjectCard::resolveTagClass('bootstrap'))->toBe('project-tag-bootstrap')
+        ->and(ProjectCard::resolveTagClass('fortify'))->toBe('project-tag-fortify')
+        ->and(ProjectCard::resolveTagClass('livewire'))->toBe('project-tag-livewire')
+        ->and(ProjectCard::resolveTagClass('unknown-tag'))->toBe('project-tag-default');
 });
 
 it('cycles project button styles continuously without duplicate adjacent styles', function () {

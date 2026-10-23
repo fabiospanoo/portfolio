@@ -41,19 +41,49 @@ body::-webkit-scrollbar{
 /* --- tags (copied from style.css) --- */
 .project-tag{
     flex: 0 0 auto;
-    font-size: 0.72rem;
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.68rem;
+    font-weight: 700;
     line-height: 1;
     letter-spacing: 0.5px;
     text-transform: uppercase;
-    padding: 3px 8px;
+    padding: 4px 8px;
     white-space: nowrap;
+    border-radius: 0px;
+    background-color: color-mix(in srgb, currentColor 10%, transparent);
     border: 1px solid currentColor;
+    transition: background-color 0.15s ease;
 }
 
-.project-tag-0{ color: #F14C4C; }
-.project-tag-1{ color: #F7DF1E; }
-.project-tag-2{ color: #9CDCFE; }
-.project-tag-3{ color: #569CD6; }
+.project-tag:hover{
+    background-color: color-mix(in srgb, currentColor 22%, transparent);
+}
+
+/* Specific technology palette */
+.project-tag-laravel{ color: #FF4438; }
+.project-tag-php{ color: #8892BF; }
+.project-tag-blade{ color: #F06529; }
+.project-tag-livewire{ color: #FB70A9; }
+.project-tag-fortify{ color: #34D399; }
+.project-tag-bootstrap{ color: #A78BFA; }
+.project-tag-tailwind{ color: #38BDF8; }
+.project-tag-scout{ color: #FBBF24; }
+.project-tag-java{ color: #FB923C; }
+.project-tag-python{ color: #60A5FA; }
+.project-tag-javascript{ color: #FACC15; }
+.project-tag-mysql{ color: #2DD4BF; }
+.project-tag-docker{ color: #38BDF8; }
+.project-tag-vite{ color: #C084FC; }
+.project-tag-agentic-ai{ color: #818CF8; }
+.project-tag-linux{ color: #CBD5E1; }
+.project-tag-default{ color: #8B949E; }
+
+/* Legacy numeric aliases */
+.project-tag-0{ color: #FF4438; }
+.project-tag-1{ color: #FACC15; }
+.project-tag-2{ color: #38BDF8; }
+.project-tag-3{ color: #8892BF; }
 .project-tag-4{ color: #8B949E; }
 
 /* --- buttons (copied from style.css) --- */

@@ -14,34 +14,52 @@ class ProjectCard extends Component
      * Kept disjoint from the button hues so tags never look like the button.
      */
     private const TAG_COLORS = [
-        'project-tag-0' => '#F14C4C',
-        'project-tag-1' => '#F7DF1E',
-        'project-tag-2' => '#9CDCFE',
-        'project-tag-3' => '#569CD6',
+        'project-tag-laravel' => '#FF4438',
+        'project-tag-php' => '#8892BF',
+        'project-tag-blade' => '#F06529',
+        'project-tag-livewire' => '#FB70A9',
+        'project-tag-fortify' => '#34D399',
+        'project-tag-bootstrap' => '#A78BFA',
+        'project-tag-tailwind' => '#38BDF8',
+        'project-tag-scout' => '#FBBF24',
+        'project-tag-java' => '#FB923C',
+        'project-tag-python' => '#60A5FA',
+        'project-tag-javascript' => '#FACC15',
+        'project-tag-mysql' => '#2DD4BF',
+        'project-tag-docker' => '#38BDF8',
+        'project-tag-vite' => '#C084FC',
+        'project-tag-agentic-ai' => '#818CF8',
+        'project-tag-linux' => '#CBD5E1',
+        'project-tag-default' => '#8B949E',
+        // Legacy numeric classes
+        'project-tag-0' => '#FF4438',
+        'project-tag-1' => '#FACC15',
+        'project-tag-2' => '#38BDF8',
+        'project-tag-3' => '#8892BF',
         'project-tag-4' => '#8B949E',
     ];
 
     /** Language/technology tag => tag class. */
     private const LANGUAGE_COLORS = [
-        'blade' => 'project-tag-0',
-        'laravel' => 'project-tag-0',
-        'livewire' => 'project-tag-0',
-        'java' => 'project-tag-1',
-        'javascript' => 'project-tag-1',
-        'scout' => 'project-tag-1',
-        'vite' => 'project-tag-1',
-        'python' => 'project-tag-2',
-        'tailwind' => 'project-tag-2',
-        'docker' => 'project-tag-2',
-        'agentic-ai' => 'project-tag-2',
-        'php' => 'project-tag-3',
-        'bootstrap' => 'project-tag-3',
-        'fortify' => 'project-tag-3',
-        'mysql' => 'project-tag-3',
-        'linux' => 'project-tag-4',
+        'laravel' => 'project-tag-laravel',
+        'php' => 'project-tag-php',
+        'blade' => 'project-tag-blade',
+        'livewire' => 'project-tag-livewire',
+        'fortify' => 'project-tag-fortify',
+        'bootstrap' => 'project-tag-bootstrap',
+        'tailwind' => 'project-tag-tailwind',
+        'scout' => 'project-tag-scout',
+        'java' => 'project-tag-java',
+        'python' => 'project-tag-python',
+        'javascript' => 'project-tag-javascript',
+        'mysql' => 'project-tag-mysql',
+        'docker' => 'project-tag-docker',
+        'vite' => 'project-tag-vite',
+        'agentic-ai' => 'project-tag-agentic-ai',
+        'linux' => 'project-tag-linux',
     ];
 
-    private const FALLBACK_TAG_CLASS = 'project-tag-4';
+    private const FALLBACK_TAG_CLASS = 'project-tag-default';
 
     /** Ordered cycle of the button styles. */
     private const BUTTON_CLASSES = ['primary', 'tertiary', 'secondary', 'quaternary', 'senary', 'quinary'];
