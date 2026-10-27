@@ -6,7 +6,6 @@
     'metaImage' => null,
     'post' => null,
     'projects' => null,
-    'codeBackground' => false,
 ])
 
 <!DOCTYPE html>
@@ -26,16 +25,7 @@
     <link rel="stylesheet" href="{{ asset('vendor/aos/aos.css') }}">
     @vite(['resources/css/app.css','resources/js/app.js'])
 </head>
-<body @class(['home-code-background' => $codeBackground])>
-    @if ($codeBackground)
-        <iframe
-            class="code-background-frame"
-            src="{{ asset('editor-background/index.html') }}"
-            title="Sfondo con codice in digitazione"
-            aria-hidden="true"
-            tabindex="-1"></iframe>
-    @endif
-
+<body>
     <x-navbar :navbarBrand="$navbarBrand"/>
 
         <div class="min-vh-100">
@@ -46,25 +36,6 @@
 
     <script src="{{ asset('vendor/aos/aos.js') }}"></script>
     <script>
-        @if ($codeBackground)
-            const updateCodeBackgroundPosition = () => {
-                const navbar = document.querySelector('.navbar-custom');
-                const footer = document.querySelector('.footer-custom');
-                const navbarHeight = navbar.getBoundingClientRect().height;
-                const footerHeight = footer.getBoundingClientRect().height;
-
-                document.body.style.setProperty('--code-background-top', `${navbarHeight}px`);
-                document.body.style.setProperty('--code-background-height', `${Math.max(0, document.body.scrollHeight - navbarHeight - footerHeight)}px`);
-            };
-
-            updateCodeBackgroundPosition();
-            const codeBackgroundResizeObserver = new ResizeObserver(updateCodeBackgroundPosition);
-            [document.body, document.querySelector('.navbar-custom'), document.querySelector('.footer-custom')].forEach((element) => {
-                codeBackgroundResizeObserver.observe(element);
-            });
-            window.addEventListener('resize', updateCodeBackgroundPosition);
-        @endif
-
         AOS.init({
             once: true,
             duration: 850,
