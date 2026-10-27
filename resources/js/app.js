@@ -11,7 +11,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         const vantaModule = await import('vanta/dist/vanta.dots.min.js');
         const DOTS = vantaModule.default.default;
 
-        DOTS({
+        const backgroundEffect = DOTS({
             el: siteBackground,
             mouseControls: false,
             touchControls: false,
@@ -26,6 +26,8 @@ window.addEventListener('DOMContentLoaded', async () => {
             backgroundColor: 0x191919,
             showLines: false,
         });
+
+        backgroundEffect.starField.rotation.y = (35 * Math.PI) / 180;
     }
 
     const hash = window.location.hash;

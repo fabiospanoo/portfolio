@@ -169,6 +169,24 @@ body::-webkit-scrollbar{
     height: 100% !important;
 }
 
+@media (min-width: 768px){
+    #site-bg.projects-background canvas{
+        height: calc(100% + 50px) !important;
+        transform: translateY(50px);
+    }
+}
+
+@media (max-width: 767px){
+    #site-bg canvas{
+        height: calc(100% + 16px) !important;
+        transform: translateY(100px);
+    }
+
+    #site-bg.projects-background canvas{
+        transform: translateY(100px);
+    }
+}
+
 .body-style,
 header,
 .footer-custom{
@@ -1162,6 +1180,20 @@ body.modal-open .min-vh-100 {
     min-height: 480px;
     color: var(--color-t);
 }
+
+.terminal-link {
+    color: var(--color-n);
+    text-decoration: none;
+  }
+  
+  .terminal-link:hover {
+    color: var(--color-p);
+    text-decoration: underline;
+    text-decoration-color: var(--color-p);
+    text-underline-offset: 5px;
+    text-decoration-thickness: 2px;
+    transition: color 0.15s ease, text-decoration-color 0.15s ease;
+  }
 
 @media (max-width: 768px) {
     .modal-custom-terminal .modal-dialog {

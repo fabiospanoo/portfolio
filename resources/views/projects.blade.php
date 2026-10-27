@@ -1,5 +1,5 @@
 <x-layout title="Fabio Spanò // Agentic AI, Java, Web Developer" navbarBrand="fabio spanò" metaDescription="Portfolio of Fabio Spanò, web developer and agentic AI specialist. Projects built with Java, Laravel, Blade and more." :projects="$projects">
-    <div id="site-bg" aria-hidden="true"></div>
+    <div id="site-bg" class="projects-background" aria-hidden="true"></div>
 
     <div class="body-style">
         <header>
@@ -7,9 +7,9 @@
                 <h1 class="title h2 bolder mt-5 pt-5" data-aos="fade-up">Web developer Full Stack</h1>
                 <div class="container-introduction" data-aos="fade-up" data-aos-delay="200">
                     <p class="contact-prompt">I build web applications using PHP, Laravel, and Blade. Graduated from Aulab Hackademy's full-stack master program, working across both backend and frontend interfaces. Currently expanding my ongoing specializations in Java/SpringBoot and Agentic AI with Python.</p>
-                    <p class="contact-prompt">Have a project in mind? Let's get in touch.</p>
-                    <div class="contact-actions d-flex flex-wrap gap-3 align-items-center">
-                        <button type="button" class="btn btn-quaternary d-inline-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#attestatoModal">
+                    <p class="contact-prompt">Have a project in mind? <a class="terminal-link" href="{{route('contact')}}" >Let's get in touch &#x2197;</a></p>
+                    <div class="contact-actions d-flex flex-wrap gap-3 align-items-center mb-0">
+                        <button type="button" class="btn btn-primary d-inline-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#attestatoModal">
                             <i class="bi bi-patch-check"></i> Certificates
                         </button>
                         <button type="button" class="btn btn-senary d-inline-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#cvModal">
