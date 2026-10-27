@@ -155,6 +155,27 @@ body::-webkit-scrollbar{
     text-underline-offset: 10px;
 }
 
+#site-bg{
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: var(--color-bg);
+}
+
+#site-bg canvas{
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.body-style,
+header,
+.footer-custom{
+    position: relative;
+    z-index: 1;
+}
+
 .body-style{
     padding-left: 140px;
     padding-right: 140px;

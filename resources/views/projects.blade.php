@@ -1,4 +1,6 @@
 <x-layout title="Fabio Spanò // Agentic AI, Java, Web Developer" navbarBrand="fabio spanò" metaDescription="Portfolio of Fabio Spanò, web developer and agentic AI specialist. Projects built with Java, Laravel, Blade and more." :projects="$projects">
+    <div id="site-bg" aria-hidden="true"></div>
+
     <div class="body-style">
         <header>
             <div class="header-custom">
@@ -112,4 +114,5 @@
             </div>
         </div>
     </div>
+
 </x-layout>

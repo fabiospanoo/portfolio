@@ -18,6 +18,8 @@
         "@fontsource/space-mono": "^5.3.0",
         "aos": "^2.3.4",
         "bootstrap": "^5.3.8",
-        "bootstrap-icons": "^1.13.2"
+        "bootstrap-icons": "^1.13.2",
+        "three": "^0.134.0",
+        "vanta": "^0.5.24"
     }
 }
