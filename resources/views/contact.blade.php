@@ -5,7 +5,7 @@
         <header>
             <div class="contact-terminal">
                 <h1 class="title bolder text-center mt-5 pt-5" data-aos="fade-up">Let's talk</h1>
-                <p class="contact-prompt" data-aos="fade-up" data-aos-delay="150">Interested in my computational knowledge of AI agents and Java? Send me a message, I usually reply within a day.</p>
+                <p class="contact-prompt" data-aos="fade-up" data-aos-delay="150">Interested in working together? Send me a message, I usually reply within a day.</p>
                 <p class="contact-links" data-aos="fade-up" data-aos-delay="300">
                     <span class="text-keyword">email</span> = <a class="text-link-custom copy-email" href="copy:fabiospanoo@outlook.it" title="Click to copy">'fabiospanoo [at] outlook (dot) it' ;</a>
                 </p>
