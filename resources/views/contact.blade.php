@@ -32,20 +32,20 @@
 
                     <div class="row g-3">
                         <div class="col-12 col-md-6">
-                            <label for="name" class="form-label"><span class="text-comment">./ </span>name</label>
+                            <label for="name" class="form-label"><span class="text-comment">./ </span>name *</label>
                             <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" required>
                             @error('name') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                         </div>
 
                         <div class="col-12 col-md-6">
-                            <label for="email" class="form-label"><span class="text-comment">./ </span>email</label>
+                            <label for="email" class="form-label"><span class="text-comment">./ </span>email *</label>
                             <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" required>
                             @error('email') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                         </div>
                     </div>
 
                     <div class="mb-3 mt-3">
-                        <label for="message" class="form-label"><span class="text-comment">./ </span>message</label>
+                        <label for="message" class="form-label"><span class="text-comment">./ </span>message *</label>
                         <textarea class="form-control" id="message" name="message" rows="5" required>{{ old('message') }}</textarea>
                         @error('message') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                     </div>
@@ -80,7 +80,7 @@
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="subtitle small me-2">* All fields are required</span>
+                        <span class="subtitle small me-2">* required fields</span>
                         <button type="submit" class="btn btn-quaternary">Send message</button>
                     </div>
                 </form>
