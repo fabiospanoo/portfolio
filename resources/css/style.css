@@ -1063,3 +1063,120 @@ body::-webkit-scrollbar{
     position: relative;
     z-index: 1;
 }
+
+/* --- Modals: Terminal Theme --- */
+body.modal-open .min-vh-100 {
+    z-index: 1055;
+}
+
+.modal-backdrop.show {
+    opacity: 0.75;
+}
+
+.modal-custom-terminal .modal-dialog {
+    max-width: 900px;
+}
+
+@media (min-width: 1200px) {
+    .modal-custom-terminal .modal-dialog {
+        max-width: 1050px;
+    }
+}
+
+.modal-custom-terminal .modal-content {
+    background-color: var(--color-nav-bg);
+    border: 1px solid var(--color-nav-bord);
+    border-radius: 0px;
+    color: var(--color-t);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.9);
+    font-family: "Space Mono", monospace;
+    overflow: hidden;
+}
+
+.modal-custom-terminal .modal-header {
+    background-color: var(--color-bg);
+    border-bottom: 1px solid var(--color-nav-bord);
+    border-radius: 0px;
+    padding: 12px 20px;
+}
+
+.modal-custom-terminal .modal-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-t);
+    margin: 0;
+}
+
+.modal-custom-terminal .btn-terminal-close {
+    background: transparent;
+    border: none;
+    color: var(--color-t-sec);
+    font-family: "Space Mono", monospace;
+    font-size: 1.1rem;
+    padding: 0 6px;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.15s ease;
+}
+
+.modal-custom-terminal .btn-terminal-close:hover {
+    color: #F14C4C;
+}
+
+.modal-custom-terminal .modal-body {
+    background-color: #0e0e0e;
+    padding: 0;
+    min-height: 520px;
+}
+
+.modal-document-frame {
+    width: 100%;
+    height: 72vh;
+    min-height: 520px;
+    border: none;
+    display: block;
+    background-color: #0e0e0e;
+}
+
+.modal-certificate-img {
+    max-height: 75vh;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+    border: 1px solid var(--color-nav-bord);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.modal-certificate-img:hover {
+    border-color: var(--color-p);
+    transform: scale(1.01);
+}
+
+.contact-actions {
+    margin-top: 36px;
+    margin-bottom: 46px;
+    text-align: left;
+}
+
+.cv-placeholder-container {
+    min-height: 480px;
+    color: var(--color-t);
+}
+
+@media (max-width: 768px) {
+    .modal-custom-terminal .modal-dialog {
+        margin: 10px;
+    }
+    .modal-document-frame {
+        height: 65vh;
+        min-height: 380px;
+    }
+    .modal-custom-terminal .modal-body {
+        min-height: 380px;
+    }
+    .contact-actions {
+        margin-top: 24px;
+        margin-bottom: 36px;
+    }
+}

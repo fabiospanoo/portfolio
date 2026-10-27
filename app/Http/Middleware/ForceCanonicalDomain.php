@@ -16,6 +16,10 @@ class ForceCanonicalDomain
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if (app()->isLocal()) {
+            return $next($request);
+        }
+
         $allowed = config('site.allowed_hosts');
 
         if ($allowed === []) {
