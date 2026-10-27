@@ -6,8 +6,8 @@
             <div class="header-custom">
                 <h1 class="title h2 bolder mt-5 pt-5" data-aos="fade-up">Web developer Full Stack</h1>
                 <div class="container-introduction" data-aos="fade-up" data-aos-delay="200">
-                    <p>I build web applications using PHP, Laravel, and Blade. Graduated from Aulab Hackademy's full-stack master program, working across both backend and frontend interfaces. Currently expanding my ongoing specializations in Java/SpringBoot and Agentic AI with Python.</p>
-                    <p>Have a project in mind? Let's get in touch.</p>
+                    <p class="contact-prompt">I build web applications using PHP, Laravel, and Blade. Graduated from Aulab Hackademy's full-stack master program, working across both backend and frontend interfaces. Currently expanding my ongoing specializations in Java/SpringBoot and Agentic AI with Python.</p>
+                    <p class="contact-prompt">Have a project in mind? Let's get in touch.</p>
                     <div class="contact-actions d-flex flex-wrap gap-3 align-items-center">
                         <button type="button" class="btn btn-quaternary d-inline-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#attestatoModal">
                             <i class="bi bi-patch-check"></i> Certificates
