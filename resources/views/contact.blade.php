@@ -1,4 +1,4 @@
-<x-layout title="Contact // Fabio Spanò" metaDescription="Get in touch with Fabio Spanò. Send a message about web development, agentic AI or Java projects.">
+<x-layout title="Contact | Fabio Spanò" metaDescription="Get in touch with Fabio Spanò. Send a message about web development projects.">
     <div id="site-bg" aria-hidden="true"></div>
 
     <div class="body-style">

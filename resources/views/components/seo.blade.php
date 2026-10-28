@@ -18,7 +18,7 @@
         : request()->url();
 
     $description = $metaDescription
-        ?? 'Personal web developer portfolio. Agentic AI, Java and web development projects.';
+        ?? 'Personal web developer portfolio. Web development projects and applications.';
 
     $image = $metaImage ? url($metaImage) : url('images/logo.png');
 
@@ -33,22 +33,23 @@
             'alternateName' => 'fabiospanoo',
             'url' => $baseUrl,
             'image' => $image,
-            'jobTitle' => 'Web Developer & Agentic AI Specialist',
-            'description' => 'Web developer and Agentic AI specialist with computational knowledge of Java and AI agents.',
+            'jobTitle' => 'Web Developer',
+            'description' => 'Web developer specializing in modern web applications.',
             'alumniOf' => [
                 '@type' => 'EducationalOrganization',
                 'name' => 'AuLab',
             ],
             'sameAs' => [
                 'https://github.com/fabiospanoo',
+                'https://www.linkedin.com/in/fabiospanoo',
             ],
             'knowsAbout' => [
-                'Agentic AI',
-                'Java',
-                'Laravel',
                 'PHP',
-                'Python',
+                'Laravel',
                 'Blade',
+                'JavaScript',
+                'HTML',
+                'CSS',
                 'Web Development',
             ],
         ],
@@ -57,7 +58,7 @@
             '@id' => $websiteId,
             'url' => $baseUrl,
             'name' => 'Fabio Spanò Portfolio',
-            'description' => 'Portfolio of Fabio Spanò, web developer and agentic AI specialist.',
+            'description' => 'Portfolio of Fabio Spanò, Web Developer.',
             'publisher' => [
                 '@id' => $personId,
             ],

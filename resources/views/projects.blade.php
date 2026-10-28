@@ -1,4 +1,4 @@
-<x-layout title="Fabio Spanò // Agentic AI, Java, Web Developer" navbarBrand="fabio spanò" metaDescription="Portfolio of Fabio Spanò, web developer and agentic AI specialist. Projects built with Java, Laravel, Blade and more." :projects="$projects">
+<x-layout title="Fabio Spanò | Web Developer" navbarBrand="fabio spanò" metaDescription="Portfolio of Fabio Spanò, Web Developer. Projects built with PHP, Laravel, Blade and modern web technologies." :projects="$projects">
     <div id="site-bg" class="projects-background" aria-hidden="true"></div>
 
     <div class="body-style">

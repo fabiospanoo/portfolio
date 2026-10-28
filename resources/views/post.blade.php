@@ -1,5 +1,5 @@
 <x-layout
-    :title="$post->title.' // Fabio Spanò'"
+    :title="$post->title.' | Fabio Spanò'"
     :meta-description="\Illuminate\Support\Str::limit($post->content, 160)"
     metaType="article"
     :post="$post">
